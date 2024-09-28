@@ -70,9 +70,10 @@ const MapComponent: React.FC = () => {
     setClickedPosition([lat, lng]);
   };
 
-  const handleNewPlaceSubmit = (lat: number, lng: number, imageFile: File | null) => {
+  const handleNewPlaceSubmit = (lat: number, lng: number, imageFile: File | null, imageFiles: File[], rating: number
+  ) => {
     // Logic gửi dữ liệu đến backend với lat, lng và imageFile
-    console.log("New place added:", lat, lng, imageFile);
+    console.log("New place added:", lat, lng, imageFile, imageFiles, rating);
     setClickedPosition(null); // Xóa marker sau khi thêm
   };
 

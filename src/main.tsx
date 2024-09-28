@@ -8,7 +8,6 @@ import { store, persistor } from "./redux/store/store.ts";
 import { QueryClient, QueryClientProvider } from "react-query";
 const queryClient = new QueryClient();
 
-
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>

@@ -5,7 +5,6 @@ import "leaflet-routing-machine";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import { Day } from "../../redux/type";
-
 import anh1 from "../../assets/user_on_map_2.png";
 
 interface RouteMapProps {

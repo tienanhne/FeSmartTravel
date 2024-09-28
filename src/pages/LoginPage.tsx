@@ -24,11 +24,12 @@ const LoginPage: React.FC = () => {
   const { mutate: loginUser, isLoading } = useMutation(
     async (loginData: LoginInput) => await login(loginData),
     {
-      onSuccess: async (data) => {
+       onSuccess: async (data) => {
+
         localStorage.setItem("accessToken", data.accessToken);
         Cookies.set("refreshToken", data.refreshToken, { expires: 7 });
         await fetchUserProfile(dispatch);
-
+        
         setOrderPopup(false);
         navigate("/");
       },

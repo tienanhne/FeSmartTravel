@@ -1,9 +1,16 @@
 import React, { useState } from "react";
+import { FaStar } from "react-icons/fa";
 
 interface NewPlaceFormProps {
   lat: number;
   lng: number;
-  onSubmit: (lat: number, lng: number, imageFile: File | null) => void;
+  onSubmit: (
+    lat: number,
+    lng: number,
+    imageFiles: File[],
+    thumbnailFile: File | null,
+    rating: number
+  ) => void;
   onDelete: () => void;
 }
 
@@ -13,20 +20,33 @@ const NewPlaceForm: React.FC<NewPlaceFormProps> = ({
   onSubmit,
   onDelete,
 }) => {
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [rating, setRating] = useState(0);
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null;
-    setImageFile(file);
+  const handleImagesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setImageFiles(files);
+  };
+
+  const handleThumbnailChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedThumbnail = imageFiles.find(
+      (file) => file.name === event.target.value
+    );
+    setThumbnailFile(selectedThumbnail || null);
+  };
+
+  const handleRatingChange = (newRating: number) => {
+    setRating(newRating);
   };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    onSubmit(lat, lng, imageFile);
+    onSubmit(lat, lng, imageFiles, thumbnailFile, rating);
   };
 
   const handleDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation(); // Ngăn sự kiện click lan ra ngoài
+    event.stopPropagation(); 
     onDelete();
   };
 
@@ -70,24 +90,79 @@ const NewPlaceForm: React.FC<NewPlaceFormProps> = ({
           />
         </div>
 
-        {/* Image Upload */}
+        {/* Multiple Image Upload */}
         <div className="mb-3">
           <label
-            htmlFor="place-image"
+            htmlFor="place-images"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Cập nhật ảnh:
+            Chọn nhiều ảnh:
           </label>
           <input
-            id="place-image"
+            id="place-images"
             type="file"
             accept="image/*"
-            onChange={handleImageChange}
+            multiple
+            onChange={handleImagesChange}
             className="w-full border border-gray-300 p-2 rounded focus:outline-none"
           />
         </div>
 
-        {/* Submit Button */}
+        {/* Select Thumbnail */}
+        {imageFiles.length > 0 && (
+          <div className="mb-3">
+            <label
+              htmlFor="thumbnail"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Chọn ảnh Thumbnail:
+            </label>
+            <select
+              id="thumbnail"
+              onChange={handleThumbnailChange}
+              className="w-full border border-gray-300 p-2 rounded focus:outline-none"
+            >
+              <option value="">Chọn ảnh làm thumbnail</option>
+              {imageFiles.map((file, index) => (
+                <option key={index} value={file.name}>
+                  {file.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Star Rating */}
+        <div className="mb-3">
+          <label
+            htmlFor="rating"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Đánh giá địa điểm:
+          </label>
+          <div className="flex">
+            {[...Array(5)].map((_, index) => {
+              const ratingValue = index + 1;
+              return (
+                <label key={index}>
+                  <input
+                    type="radio"
+                    name="rating"
+                    value={ratingValue}
+                    onClick={() => handleRatingChange(ratingValue)}
+                    className="hidden"
+                  />
+                  <FaStar
+                    size={24}
+                    className="cursor-pointer"
+                    color={ratingValue <= rating ? "#ffc107" : "#e4e5e9"}
+                  />
+                </label>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="w-full flex justify-around">
           <button
             type="submit"
@@ -96,8 +171,8 @@ const NewPlaceForm: React.FC<NewPlaceFormProps> = ({
             Đóng góp
           </button>
           <button
-            type="button" 
-            onClick={handleDeleteClick} 
+            type="button"
+            onClick={handleDeleteClick}
             className="bg-gradient-to-r from-gray-400 to-gray-600 hover:bg-gradient-to-r hover:from-gray-600 hover:to-gray-800 transition-all duration-600 text-white p-2 rounded-lg"
           >
             Xóa bỏ
